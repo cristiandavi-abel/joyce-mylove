@@ -119,7 +119,7 @@ function drawMap() {
   ctx.fillStyle='#fff0f5'; ctx.fillRect(0,0,canvas.width,canvas.height);
   updateHearts(); drawHearts();
   drawText('Mapa das Fases', canvas.width/2, 80, 32, '#c2185b');
-  const phases=['Fase 1: Jogo da Velha do Amor','Fase 2: Caça-Palavras','Fase 3: Caça aos Corações','Fase 4: Stop do Casal','Fase 5: Nossa História','Final: O Encontro'];
+  const phases=['Fase 1: Jogo da Velha do Amor','Fase 2: Caça aos Corações','Fase 3: Stop do Casal','Fase 4: Nossa História','Final: O Encontro'];
   const cols=2; const gap=20;
   const pw=300, ph=90;
   const startX=(canvas.width-cols*pw-(cols-1)*gap)/2;
@@ -149,7 +149,7 @@ function handleClick(x,y){
       const bx=startX+col*(pw+gap), by=startY+row*(ph+gap);
       if(x>=bx&&x<=bx+pw&&y>=by&&y<=by+ph){
         if((i+1)<=progress.unlocked){
-          state = [STATE.tic,STATE.word,STATE.hearts,STATE.stop,STATE.story,STATE.final][i];
+          state = [STATE.tic,STATE.hearts,STATE.stop,STATE.story,STATE.final][i];
           initPhase(state);
         }
       }
@@ -391,7 +391,7 @@ function updatePlayer(){
   heartsItems.forEach(h=>{
     if(!h.got && Math.hypot(h.x-player.x,h.y-player.y)<25){ h.got=true; alert('❤️ '+h.msg); }
   });
-  if(heartsItems.every(h=>h.got)){ setTimeout(()=>{ unlock(4); state=STATE.map; },1500); }
+  if(heartsItems.every(h=>h.got)){ setTimeout(()=>{ unlock(3); state=STATE.map; },1500); }
 }
 function drawHeartsPhase(){
   ctx.fillStyle='#e8f5e9'; ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -442,7 +442,7 @@ window.addEventListener('keydown', e=>{
       stopTyping='';
       stopIdx = (stopIdx+1)%stopCats.length;
       if(Object.keys(stopAnswers).length===stopCats.length){
-        setTimeout(()=>{ unlock(5); state=STATE.map; },2000);
+        setTimeout(()=>{ unlock(4); state=STATE.map; },2000);
       }
     }
   } else if(e.key==='Backspace'){
@@ -521,7 +521,7 @@ canvas.addEventListener('click', function storyClick(e){
       if(foundErrors.has(i)) return;
       foundErrors.add(i);
       storyMsg = e2.msg;
-      if(foundErrors.size===4){ unlock(6); }
+      if(foundErrors.size===4){ unlock(5); }
     }
   });
 }, true);
@@ -566,7 +566,7 @@ canvas.addEventListener('click', function finalClick(e){
 // ---------- Init phase ----------
 function initPhase(s){
   if(s===STATE.tic) initTic();
-  if(s===STATE.word) initWord();
+
   if(s===STATE.hearts) initHearts();
   if(s===STATE.stop) initStop();
   if(s===STATE.story) initStory();
@@ -609,7 +609,7 @@ function loop(){
   if(state===STATE.menu){ menuBtn=drawMenu(); }
   else if(state===STATE.map){ drawMap(); }
   else if(state===STATE.tic){ drawTic(); }
-  else if(state===STATE.word){ drawWord(); }
+
   else if(state===STATE.hearts){ updatePlayer(); drawHeartsPhase(); }
   else if(state===STATE.stop){ drawStop(); }
   else if(state===STATE.story){ drawStory(); }
