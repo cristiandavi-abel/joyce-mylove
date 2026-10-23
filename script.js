@@ -278,20 +278,52 @@ function drawWord(){
 
 // click handling for word search: simple - click letters; if a word completed, mark found
 let wordClicks=[];
-canvas.addEventListener('click', function wordClick(e){
-  if(state!==STATE.word) return;
-  const r=canvas.getBoundingClientRect(); const x=e.clientX-r.left, y=e.clientY-r.top;
+function wordCellAt(x,y){
   const cell=34,size=12;
   const startX=(canvas.width-size*cell)/2; const startY=90;
   const c=Math.floor((x-startX)/cell), rr=Math.floor((y-startY)/cell);
-  if(rr<0||rr>=size||c<0||c>=size) return;
-  // toggle
-  const idx=wordClicks.findIndex(s=>s.r===rr&&s.c===c);
-  if(idx>=0) wordClicks.splice(idx,1); else wordClicks.push({r:rr,c});
-  // check words
-  // horizontal/vertical runs
-  checkWords();
-}, true);
+  if(rr<0||rr>=size||c<0||c>=size) return null;
+  return {r:rr,c};
+}
+let wordDragging=false;
+canvas.addEventListener('mousedown', e=>{
+  if(state!==STATE.word) return;
+  const r=canvas.getBoundingClientRect(); const cell=wordCellAt(e.clientX-r.left,e.clientY-r.top);
+  if(cell){ wordDragging=true; wordClicks=[cell]; }
+});
+canvas.addEventListener('mousemove', e=>{
+  if(state!==STATE.word||!wordDragging) return;
+  const r=canvas.getBoundingClientRect(); const cell=wordCellAt(e.clientX-r.left,e.clientY-r.top);
+  if(cell && !wordClicks.some(s=>s.r===cell.r&&s.c===cell.c)){
+    const first=wordClicks[0];
+    const dr=cell.r-first.r, dc=cell.c-first.c;
+    if(dr===0||dc===0||Math.abs(dr)===Math.abs(dc)) wordClicks.push(cell);
+  }
+});
+canvas.addEventListener('mouseup', e=>{
+  if(state!==STATE.word||!wordDragging) return;
+  wordDragging=false; checkWords();
+  setTimeout(()=>{ wordClicks=[]; }, 500);
+});
+canvas.addEventListener('touchstart', e=>{
+  if(state!==STATE.word) return;
+  const t=e.touches[0]; const r=canvas.getBoundingClientRect(); const cell=wordCellAt(t.clientX-r.left,t.clientY-r.top);
+  if(cell){ wordDragging=true; wordClicks=[cell]; }
+});
+canvas.addEventListener('touchmove', e=>{
+  if(state!==STATE.word||!wordDragging) return;
+  const t=e.touches[0]; const r=canvas.getBoundingClientRect(); const cell=wordCellAt(t.clientX-r.left,t.clientY-r.top);
+  if(cell && !wordClicks.some(s=>s.r===cell.r&&s.c===cell.c)){
+    const first=wordClicks[0];
+    const dr=cell.r-first.r, dc=cell.c-first.c;
+    if(dr===0||dc===0||Math.abs(dr)===Math.abs(dc)) wordClicks.push(cell);
+  }
+});
+canvas.addEventListener('touchend', e=>{
+  if(state!==STATE.word||!wordDragging) return;
+  wordDragging=false; checkWords();
+  setTimeout(()=>{ wordClicks=[]; }, 500);
+});
 
 function checkWords(){
   // build selected set
