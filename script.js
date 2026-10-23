@@ -362,8 +362,8 @@ function drawHeartsPhase(){
   for(let i=0;i<20;i++){ ctx.fillStyle='#81c784'; ctx.beginPath(); ctx.arc(i*80, canvas.height-40, 30,0,Math.PI*2); ctx.fill(); }
   drawText('Caça aos Corações 🌷', canvas.width/2, 40, 26, '#2e7d32');
   heartsItems.forEach(h=>{ if(!h.got){ ctx.font='32px serif'; ctx.fillStyle='#e91e63'; ctx.textAlign='center'; ctx.fillText('❤',h.x,h.y); } });
-  // player
-  ctx.font='32px serif'; ctx.fillStyle='#f06292'; ctx.textAlign='center'; ctx.fillText('👧',player.x,player.y);
+  // player (gatinha pixel art)
+  drawCat(player.x,player.y,true);
   drawText('Use WASD ou setas. Encontre todos os corações!', canvas.width/2, canvas.height-20, 14, '#2e7d32');
 }
 
@@ -498,9 +498,9 @@ function drawFinal(){
   // ground
   ctx.fillStyle='#81c784'; ctx.fillRect(0,canvas.height-80,canvas.width,80);
   // player & cristian
-  ctx.font='40px serif'; ctx.textAlign='center';
-  ctx.fillText('👧',player.x,player.y);
-  ctx.fillText('👦',cristian.x,cristian.y);
+  ctx.textAlign='center';
+  drawCat(player.x,player.y,true);
+  drawCat(cristian.x,cristian.y,false);
   // move player
   updatePlayer();
   if(Math.hypot(player.x-cristian.x,player.y-cristian.y)<40){
@@ -534,6 +534,37 @@ function initPhase(s){
   if(s===STATE.stop) initStop();
   if(s===STATE.story) initStory();
   if(s===STATE.final) initFinal();
+}
+
+// ---------- Pixel cats ----------
+function drawCat(x,y,female){
+  const s=4;
+  const body = female?'#f8bbd0':'#90caf9';
+  ctx.fillStyle=body;
+  // body
+  ctx.fillRect(x-12,y-4,24,20);
+  // head
+  ctx.fillRect(x-10,y-18,20,16);
+  // ears
+  ctx.fillRect(x-12,y-22,6,6);
+  ctx.fillRect(x+6,y-22,6,6);
+  // eyes
+  ctx.fillStyle='#000';
+  ctx.fillRect(x-6,y-14,4,4);
+  ctx.fillRect(x+2,y-14,4,4);
+  // nose
+  ctx.fillStyle='#e91e63';
+  ctx.fillRect(x-2,y-10,4,3);
+  // bow for female
+  if(female){
+    ctx.fillStyle='#e91e63';
+    ctx.fillRect(x-4,y-24,8,4);
+    ctx.fillRect(x-6,y-22,4,4);
+    ctx.fillRect(x+2,y-22,4,4);
+  }
+  // tail
+  ctx.fillStyle=body;
+  ctx.fillRect(x+12,y,8,4);
 }
 
 // ---------- Loop ----------
