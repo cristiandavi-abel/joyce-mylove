@@ -289,7 +289,12 @@ let wordDragging=false;
 canvas.addEventListener('mousedown', e=>{
   if(state!==STATE.word) return;
   const r=canvas.getBoundingClientRect(); const cell=wordCellAt(e.clientX-r.left,e.clientY-r.top);
-  if(cell){ wordDragging=true; wordClicks=[cell]; }
+  if(cell){ wordDragging=true; wordClicks=[cell]; checkWords(); }
+});
+canvas.addEventListener('click', e=>{
+  if(state!==STATE.word) return;
+  const r=canvas.getBoundingClientRect(); const cell=wordCellAt(e.clientX-r.left,e.clientY-r.top);
+  if(cell){ if(!wordClicks.some(s=>s.r===cell.r&&s.c===cell.c)) wordClicks.push(cell); checkWords(); setTimeout(()=>{wordClicks=[];},600); }
 });
 canvas.addEventListener('mousemove', e=>{
   if(state!==STATE.word||!wordDragging) return;
